@@ -48,6 +48,41 @@ app.post("/newToDo/:id", async (request, response) => {
   }
 });
 
+app.delete("/ToDo/:id", async (request, response) => {
+
+  const toDoId = parseInt(request.params.id);
+
+  try {
+    await prisma.$transaction(async (prisma) => {
+      const toDo = await prisma.toDo.findUnique({
+        where: {
+          id: toDoId
+        },
+      });
+
+      if (!toDo) {
+        return response.status(404).json({ error: "ToDo not Found" });
+      }
+
+      await prisma.notToDo.delete({
+        where: {
+          todoId: toDoId
+        },
+      });
+
+      await prisma.toDo.delete({
+        where: {
+          id: toDoId
+        },
+      });
+    });
+
+    response.status(200).json({ message: "Todo and not toDo erased"});
+  } catch (error) {
+    response.status(500).json({error:"Error deleting todo"})
+  }
+});
+
 app.post("/user", async (request, response) => {
   const { email, password } = request.body;
 
