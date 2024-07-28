@@ -1,40 +1,23 @@
-Por supuesto, aquí tienes el contenido del README.md en formato raw para que puedas copiarlo y pegarlo fácilmente:
 
-```markdown
 # Not-today
 
-Bienvenido al repositorio "Not-today". Este README proporciona instrucciones para inicializar y ejecutar el proyecto, incluyendo el frontend, backend, Docker y las migraciones de Prisma.
-
-## Requisitos previos
-
-Asegúrate de tener instalado lo siguiente en tu sistema:
-
-- [Node.js](https://nodejs.org/) (versión 14.x o superior)
-- [npm](https://www.npmjs.com/) (generalmente viene con Node.js)
-- [Git](https://git-scm.com/)
-- [Docker](https://www.docker.com/) y [Docker Compose](https://docs.docker.com/compose/)
+Bienvenido al repositorio "Not-today". Este README proporciona instrucciones para inicializar y ejecutar el proyecto, incluyendo el frontend, Docker y las migraciones de Prisma.
 
 ## Configuración inicial
 
 1. Clona el repositorio:
 ```
-
 git clone https://github.com/JoseJoaquinMartinez/Not-today.git
-
 ```
 
 2. Navega al directorio del proyecto:
 ```
-
 cd Not-today
-
 ```
 
 3. Instala las dependencias:
 ```
-
 npm install
-
 ````
 
 4. Configura las variables de entorno:
@@ -52,20 +35,8 @@ npm install
 
 Para iniciar el frontend en modo de desarrollo, ejecuta:
 
-````
-
+```
 npm run dev
-
-```
-
-### Backend
-
-Para iniciar el backend en modo de desarrollo, usa:
-
-```
-
-npm run dev-node
-
 ```
 
 ### Docker Compose
@@ -73,9 +44,7 @@ npm run dev-node
 Para levantar la base de datos PostgreSQL con Docker Compose, ejecuta:
 
 ```
-
-docker-compose up
-
+docker-compose up -d
 ````
 
 El archivo `docker-compose.yml` está configurado de la siguiente manera:
@@ -105,6 +74,12 @@ docker-compose down
 
 ## Prisma y migraciones de base de datos
 
+Instalación del Prisma CLI en dependencias de desarrollo
+
+```
+npx prisma init --datasource-provider PostgreSQL
+```
+
 Para ejecutar las migraciones de Prisma, usa los siguientes comandos:
 
 1. Generar una nueva migración:
@@ -127,7 +102,6 @@ Para ejecutar las migraciones de Prisma, usa los siguientes comandos:
 ## Scripts disponibles
 
 - `npm run dev`: Inicia el servidor de desarrollo de Vite para el frontend.
-- `npm run dev-node`: Inicia el servidor de desarrollo del backend usando tsx watch.
 - `npm run build`: Compila TypeScript y construye la aplicación para producción.
 - `npm run lint`: Ejecuta ESLint para verificar el código.
 - `npm run preview`: Inicia el servidor de vista previa de Vite.
@@ -150,7 +124,6 @@ Si encuentras algún problema o tienes sugerencias para mejorar el proyecto, por
 
 ¡Gracias por contribuir a Not-today!
 
-```
 
-Ahora puedes copiar este contenido y pegarlo directamente en tu archivo README.md. ¿Necesitas alguna otra modificación o ayuda adicional?
-```
+
+
