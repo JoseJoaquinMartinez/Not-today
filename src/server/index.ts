@@ -1,4 +1,4 @@
-import express, { response } from "express";
+import express, { request, response } from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 
@@ -8,6 +8,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 export { app };
+
+//TODOS add jwt authentication
+
+//create new todo
 
 app.post("/newToDo/:id", async (request, response) => {
   const { title } = request.body;
@@ -48,6 +52,8 @@ app.post("/newToDo/:id", async (request, response) => {
   }
 });
 
+//signup
+
 app.post("/user", async (request, response) => {
   const { email, password } = request.body;
 
@@ -64,7 +70,31 @@ app.post("/user", async (request, response) => {
     });
     response.status(201).json({ message: "User added" });
   } catch (error) {
-    response.status(500).json({ error: "Error creating new user" })
+    response.status(500).json({ error: "Error creating new user" });
+  }
+});
+
+//login
+
+app.post("/login", async (request, response) => {
+  const { email, password } = request.body;
+
+  if (!email || !password) {
+    return response.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    user && user.password === password
+      ? response.status(200).json({ message: "Login successful" })
+      : response.status(401).json({ message: "Invalid email or password" });
+  } catch (error) {
+    response.status(500).json({ error: `"Error logging in user: ${error}` });
   }
 });
 
