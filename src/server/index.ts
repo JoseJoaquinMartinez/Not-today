@@ -48,6 +48,26 @@ app.post("/newToDo/:id", async (request, response) => {
   }
 });
 
+app.post("/user", async (request, response) => {
+  const { email, password } = request.body;
+
+  if (!email || !password) {
+    return response.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const newUser = await prisma.user.create({
+      data: {
+        email: email,
+        password: password,
+      },
+    });
+    response.status(201).json({ message: "User added" });
+  } catch (error) {
+    response.status(500).json({ error: "Error creating new user" })
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
