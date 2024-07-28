@@ -3,9 +3,10 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-const PORT = process.env.BACKEND_URL || 3000;
+const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
+app.use(express.json());
 
 app.post("/newToDo/:id", async (request, response) => {
   const { title } = request.body;
