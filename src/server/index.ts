@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(cors());
 app.use(express.json());
+export { app };
 
 app.post("/newToDo/:id", async (request, response) => {
   const { title } = request.body;
