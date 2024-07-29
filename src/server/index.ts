@@ -69,6 +69,12 @@ app.post("/user", async (request, response) => {
       },
     });
     response.status(201).json({ message: "User added" });
+    const newUserData = await prisma.userData.create({
+      data: {
+        userId: newUser.id,
+      },
+    });
+    response.status(201).json({ message: "User data added" });
   } catch (error) {
     response.status(500).json({ error: "Error creating new user" });
   }
