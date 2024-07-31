@@ -1,6 +1,7 @@
 import express, { request, response } from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
@@ -8,6 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 export { app };
+const saltRounds = 10;
 
 //TODOS add jwt authentication
 
