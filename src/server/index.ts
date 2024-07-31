@@ -64,10 +64,11 @@ app.post("/user", async (request, response) => {
   }
 
   try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newUser = await prisma.user.create({
       data: {
         email: email,
-        password: password,
+        password: hashedPassword,
       },
     });
     response.status(201).json({ message: "User added" });
@@ -98,7 +99,7 @@ app.post("/login", async (request, response) => {
       },
     });
 
-    user && user.password === password
+    user && (await bcrypt.compare(password, user.password)) === password
       ? response.status(200).json({ message: "Login successful" })
       : response.status(401).json({ message: "Invalid email or password" });
   } catch (error) {
