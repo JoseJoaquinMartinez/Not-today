@@ -1,6 +1,7 @@
 import express, { request, response } from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
@@ -8,6 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 export { app };
+const saltRounds = 10;
 
 //TODOS add jwt authentication
 
@@ -69,6 +71,12 @@ app.post("/user", async (request, response) => {
       },
     });
     response.status(201).json({ message: "User added" });
+    const newUserData = await prisma.userData.create({
+      data: {
+        userId: newUser.id,
+      },
+    });
+    response.status(201).json({ message: "User data added" });
   } catch (error) {
     response.status(500).json({ error: "Error creating new user" });
   }

@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../styles/pages/Singup.css";
+import "../styles/pages/Login.css";
 
-const Singup = () => {
+const Login = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "",
     password: "",
-    confirmPassword: "",
   });
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,12 +14,12 @@ const Singup = () => {
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      alert("Passwords do not match");
+    const { email, password } = form;
+    if (email === "" || password === "") {
+      alert("Please fill all the fields");
       return;
     }
-    const { email, password } = form;
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -31,23 +30,23 @@ const Singup = () => {
       }),
     });
     if (response.ok) {
-      alert("User created successfully");
+      alert("Login successful");
       navigate(`/`);
     }
   };
 
   return (
-    <section className="signup-container w-full h-screen flex items-center justify-center">
+    <section className="login-container w-full h-screen flex items-center justify-center">
       <article className="flex flex-col  items-center bg-[#fbe9c3] rounded-lg">
-        <h2 className="text-[#4A249D] m-4 text-2xl">Register</h2>
+        <h2 className="text-[#4A249D] m-4 text-2xl">Login</h2>
         <form
-          className=" flex flex-col items-center justify-around w-full h-full text-[#4A249D] text-xl "
+          className=" flex flex-col items-center justify-around w-full h-full text-[#4A249D] text-xl m-5 "
           onSubmit={handleSubmit}
         >
           <label htmlFor="email">Email</label>
 
           <input
-            className="bg-[#009FBD] text-[#4A249D] placeholder-[#4A249D]/70 placeholder:text-sm"
+            className="bg-[#009FBD] text-[#4A249D] placeholder-[#4A249D]/70 placeholder:text-sm m-3"
             type="email"
             name="email"
             placeholder="Email"
@@ -58,7 +57,7 @@ const Singup = () => {
           <label htmlFor="password">Password</label>
 
           <input
-            className="bg-[#009FBD] text-[#4A249D] placeholder-[#4A249D]/70 placeholder:text-sm"
+            className="bg-[#009FBD] text-[#4A249D] placeholder-[#4A249D]/70 placeholder:text-sm m-3"
             type="password"
             name="password"
             placeholder="Password"
@@ -66,29 +65,16 @@ const Singup = () => {
             onChange={handleChange}
           />
 
-          <label htmlFor="confirmPassword">Confirm Password</label>
-          <input
-            className="bg-[#009FBD] text-[#4A249D] placeholder-[#4A249D]/70 placeholder:text-sm"
-            type="password"
-            placeholder="Confirm Password"
-            name="confirmPassword"
-            value={form.confirmPassword}
-            onChange={handleChange}
-          />
-
           <button
             className="bg-[#855EDA] hover:bg-[#4A249D] text-[#fbe9c3] hover:text-[#F9E2AF] transition-all rounded-lg p-4 m-4"
             type="submit"
           >
-            REGISTER
+            LOGIN
           </button>
-          <p className="text- text-center m-4 ">
-            Already have an account? <a href="/">Sign in</a>
-          </p>
         </form>
       </article>
     </section>
   );
 };
 
-export default Singup;
+export default Login;
