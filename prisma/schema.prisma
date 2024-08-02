@@ -23,7 +23,7 @@ model User {
 
 model UserData {
   id        Int      @id @default(autoincrement())
-  user  User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int 
   todo      ToDo[]
 }
@@ -33,7 +33,7 @@ model ToDo {
   title     String
   completed Boolean  @default(false)
   createdAt DateTime @default(now())
-  user      UserData    @relation(fields: [userId], references: [id])
+  user      UserData @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   notToDo   NotToDo[]
 }
@@ -42,7 +42,9 @@ model NotToDo {
   id        Int      @id @default(autoincrement())
   title     String
   completed Boolean  @default(false)
-  todo      ToDo     @relation(fields: [todoId], references: [id])
+  todo      ToDo     @relation(fields: [todoId], references: [id], onDelete: Cascade)
   todoId    Int
 }
+
+
 

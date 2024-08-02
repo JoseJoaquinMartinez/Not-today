@@ -31,7 +31,8 @@ const Singup = () => {
       }),
     });
     if (response.ok) {
-      alert("User created successfully");
+      const { token } = await response.json();
+      sessionStorage.setItem("token", token);
       navigate(`/`);
     }
   };

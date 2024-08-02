@@ -1,7 +1,9 @@
-import express, { request, response } from "express";
+import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { authenticateToken } from "./jwt-authentication";
 
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
@@ -11,13 +13,10 @@ app.use(express.json());
 export { app };
 const saltRounds = 10;
 
-//TODOS add jwt authentication
-
 //create new todo
 
-app.post("/newToDo/:id", async (request, response) => {
+app.post("/newToDo/:id", authenticateToken, async (request, response) => {
   const { title } = request.body;
-
   const paramsId = parseInt(request.params.id);
 
   if (paramsId) {
@@ -34,23 +33,16 @@ app.post("/newToDo/:id", async (request, response) => {
         },
       });
       if (!newToDo) {
-        response.status(500).json({ message: "Error creating new ToDo" });
+        return response
+          .status(500)
+          .json({ message: "Error creating new ToDo" });
       }
+      response.status(201).json(newToDo);
     } else {
-      response.status(404).json({ message: "User does not found" });
+      response.status(404).json({ message: "User not found" });
     }
   } else {
     response.status(400).json({ message: "Invalid ID" });
-  }
-  const newToDoList = await prisma.toDo.findMany({
-    where: {
-      userId: paramsId,
-    },
-  });
-  if (!newToDoList) {
-    response.status(500).json({ message: "Error getting ToDos" });
-  } else {
-    response.status(200).json(newToDoList);
   }
 });
 
@@ -64,19 +56,22 @@ app.post("/user", async (request, response) => {
   }
 
   try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newUser = await prisma.user.create({
       data: {
         email: email,
-        password: password,
+        password: hashedPassword,
       },
     });
-    response.status(201).json({ message: "User added" });
     const newUserData = await prisma.userData.create({
       data: {
         userId: newUser.id,
       },
     });
-    response.status(201).json({ message: "User data added" });
+    const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET!, {
+      expiresIn: "24h",
+    });
+    response.status(201).json({ message: "User added", token });
   } catch (error) {
     response.status(500).json({ error: "Error creating new user" });
   }
@@ -98,9 +93,14 @@ app.post("/login", async (request, response) => {
       },
     });
 
-    user && user.password === password
-      ? response.status(200).json({ message: "Login successful" })
-      : response.status(401).json({ message: "Invalid email or password" });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+        expiresIn: "24h",
+      });
+      response.status(200).json({ message: "Login successful", token });
+    } else {
+      response.status(401).json({ message: "Invalid email or password" });
+    }
   } catch (error) {
     response.status(500).json({ error: `"Error logging in user: ${error}` });
   }

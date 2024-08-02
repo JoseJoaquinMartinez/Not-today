@@ -30,7 +30,8 @@ const Login = () => {
       }),
     });
     if (response.ok) {
-      alert("Login successful");
+      const { token } = await response.json();
+      sessionStorage.setItem("token", token);
       navigate(`/`);
     }
   };
