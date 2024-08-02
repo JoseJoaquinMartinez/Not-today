@@ -1,6 +1,9 @@
-import express, { response } from "express";
+import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { authenticateToken } from "./jwt-authentication";
 
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
@@ -8,10 +11,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 export { app };
+const saltRounds = 10;
 
-app.post("/newToDo/:id", async (request, response) => {
+//CREATE new todo
+
+app.post("/newToDo/:id", authenticateToken, async (request, response) => {
   const { title } = request.body;
-
   const paramsId = parseInt(request.params.id);
 
   if (paramsId) {
@@ -28,33 +33,68 @@ app.post("/newToDo/:id", async (request, response) => {
         },
       });
       if (!newToDo) {
-        response.status(500).json({ message: "Error creating new ToDo" });
+        return response
+          .status(500)
+          .json({ message: "Error creating new ToDo" });
       }
+      response.status(201).json(newToDo);
     } else {
-      response.status(404).json({ message: "User does not found" });
+      response.status(404).json({ message: "User not found" });
     }
   } else {
     response.status(400).json({ message: "Invalid ID" });
   }
-  const newToDoList = await prisma.toDo.findMany({
-    where: {
-      userId: paramsId,
-    },
-  });
-  if (!newToDoList) {
-    response.status(500).json({ message: "Error getting ToDos" });
+});
+
+//GET toDos
+
+app.get("/todos/:id", authenticateToken, async (request, response) => {
+  const paramsId = parseInt(request.params.id);
+
+  if (paramsId) {
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          id: paramsId,
+        },
+      });
+
+      if (user) {
+        const userData = await prisma.userData.findMany({
+          where: {
+            userId: paramsId,
+          },
+          include: {
+            todo: {
+              include: {
+                notToDo: true,
+              },
+            },
+          },
+        });
+
+        return response.status(200).json(userData);
+      } else {
+        return response.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      return response.status(500).json({ message: "Error loading todos" });
+    }
   } else {
-    response.status(200).json(newToDoList);
+    return response.status(400).json({ message: "Invalid ID" });
   }
 });
 
-app.delete("/ToDo/:id", async (request, response) => {
+
+//DELETE toDo
+
+app.delete("/ToDo/:id", authenticateToken, async (request, response) => {
 
   const toDoId = parseInt(request.params.id);
 
   try {
     await prisma.$transaction(async (prisma) => {
-      const toDo = await prisma.toDo.findUnique({
+      const toDo = await prisma.toDo.findFirst({
         where: {
           id: toDoId
         },
@@ -63,12 +103,6 @@ app.delete("/ToDo/:id", async (request, response) => {
       if (!toDo) {
         return response.status(404).json({ error: "ToDo not Found" });
       }
-
-      await prisma.notToDo.delete({
-        where: {
-          todoId: toDoId
-        },
-      });
 
       await prisma.toDo.delete({
         where: {
@@ -83,6 +117,8 @@ app.delete("/ToDo/:id", async (request, response) => {
   }
 });
 
+//SINGUP
+
 app.post("/user", async (request, response) => {
   const { email, password } = request.body;
 
@@ -91,15 +127,53 @@ app.post("/user", async (request, response) => {
   }
 
   try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newUser = await prisma.user.create({
       data: {
         email: email,
-        password: password,
+        password: hashedPassword,
       },
     });
-    response.status(201).json({ message: "User added" });
+    const newUserData = await prisma.userData.create({
+      data: {
+        userId: newUser.id,
+      },
+    });
+    const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET!, {
+      expiresIn: "24h",
+    });
+    response.status(201).json({ message: "User added", token });
   } catch (error) {
-    response.status(500).json({ error: "Error creating new user" })
+    response.status(500).json({ error: "Error creating new user" });
+  }
+});
+
+//LOGIN
+
+app.post("/login", async (request, response) => {
+  const { email, password } = request.body;
+
+  if (!email || !password) {
+    return response.status(400).json({ message: "All fields are required" });
+  }
+
+  try {
+    const user = await prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+        expiresIn: "24h",
+      });
+      response.status(200).json({ message: "Login successful", token });
+    } else {
+      response.status(401).json({ message: "Invalid email or password" });
+    }
+  } catch (error) {
+    response.status(500).json({ error: `"Error logging in user: ${error}` });
   }
 });
 
