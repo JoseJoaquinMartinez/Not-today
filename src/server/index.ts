@@ -13,7 +13,7 @@ app.use(express.json());
 export { app };
 const saltRounds = 10;
 
-//create new todo
+//CREATE new todo
 
 app.post("/newToDo/:id", authenticateToken, async (request, response) => {
   const { title } = request.body;
@@ -46,7 +46,78 @@ app.post("/newToDo/:id", authenticateToken, async (request, response) => {
   }
 });
 
-//signup
+//GET toDos
+
+app.get("/todos/:id", authenticateToken, async (request, response) => {
+  const paramsId = parseInt(request.params.id);
+
+  if (paramsId) {
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          id: paramsId,
+        },
+      });
+
+      if (user) {
+        const userData = await prisma.userData.findMany({
+          where: {
+            userId: paramsId,
+          },
+          include: {
+            todo: {
+              include: {
+                notToDo: true,
+              },
+            },
+          },
+        });
+
+        return response.status(200).json(userData);
+      } else {
+        return response.status(404).json({ message: "User not found" });
+      }
+    } catch (error) {
+      return response.status(500).json({ message: "Error loading todos" });
+    }
+  } else {
+    return response.status(400).json({ message: "Invalid ID" });
+  }
+});
+
+
+//DELETE toDo
+
+app.delete("/ToDo/:id", authenticateToken, async (request, response) => {
+
+  const toDoId = parseInt(request.params.id);
+
+  try {
+    await prisma.$transaction(async (prisma) => {
+      const toDo = await prisma.toDo.findFirst({
+        where: {
+          id: toDoId
+        },
+      });
+
+      if (!toDo) {
+        return response.status(404).json({ error: "ToDo not Found" });
+      }
+
+      await prisma.toDo.delete({
+        where: {
+          id: toDoId
+        },
+      });
+    });
+
+    response.status(200).json({ message: "Todo and not toDo erased"});
+  } catch (error) {
+    response.status(500).json({error:"Error deleting todo"})
+  }
+});
+
+//SINGUP
 
 app.post("/user", async (request, response) => {
   const { email, password } = request.body;
@@ -77,7 +148,7 @@ app.post("/user", async (request, response) => {
   }
 });
 
-//login
+//LOGIN
 
 app.post("/login", async (request, response) => {
   const { email, password } = request.body;
