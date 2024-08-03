@@ -32,7 +32,7 @@ const Login = () => {
     if (response.ok) {
       const { token } = await response.json();
       sessionStorage.setItem("token", token);
-      navigate(`/`);
+      navigate(`/not-today`);
     }
   };
 

@@ -29,7 +29,7 @@ app.post("/newToDo/:id", authenticateToken, async (request, response) => {
       const newToDo = await prisma.toDo.create({
         data: {
           title: title,
-          userId: userExsits.id,
+          userId: paramsId,
         },
       });
       if (!newToDo) {
@@ -85,18 +85,16 @@ app.get("/todos/:id", authenticateToken, async (request, response) => {
   }
 });
 
-
 //DELETE toDo
 
 app.delete("/ToDo/:id", authenticateToken, async (request, response) => {
-
   const toDoId = parseInt(request.params.id);
 
   try {
     await prisma.$transaction(async (prisma) => {
       const toDo = await prisma.toDo.findFirst({
         where: {
-          id: toDoId
+          id: toDoId,
         },
       });
 
@@ -106,14 +104,14 @@ app.delete("/ToDo/:id", authenticateToken, async (request, response) => {
 
       await prisma.toDo.delete({
         where: {
-          id: toDoId
+          id: toDoId,
         },
       });
     });
 
-    response.status(200).json({ message: "Todo and not toDo erased"});
+    response.status(200).json({ message: "Todo and not toDo erased" });
   } catch (error) {
-    response.status(500).json({error:"Error deleting todo"})
+    response.status(500).json({ error: "Error deleting todo" });
   }
 });
 
