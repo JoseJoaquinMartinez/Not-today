@@ -22,14 +22,14 @@ app.post("/newToDo/:id", authenticateToken, async (request, response) => {
   if (paramsId) {
     const userExsits = await prisma.userData.findFirst({
       where: {
-        id: paramsId,
+        userId: paramsId,
       },
     });
     if (userExsits) {
       const newToDo = await prisma.toDo.create({
         data: {
           title: title,
-          userId: paramsId,
+          userId: userExsits.id,
         },
       });
       if (!newToDo) {
