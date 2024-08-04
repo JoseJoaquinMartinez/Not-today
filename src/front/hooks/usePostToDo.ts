@@ -1,6 +1,4 @@
-import { jwtDecode } from "jwt-decode";
-
-import type { decodedToken } from "../components/types";
+import { useUserIdFromToken } from "./indexs.ts";
 
 export const usePostToDo = async (
   newToDo: string,
@@ -10,10 +8,7 @@ export const usePostToDo = async (
 ): Promise<void> => {
   if (newToDo === "") return;
   try {
-    const decodedToken: decodedToken = jwtDecode(
-      sessionStorage.getItem("token")!
-    );
-    const userId = decodedToken.userId;
+    const userId = useUserIdFromToken();
 
     const sendNewTodo = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/newToDo/${userId}`,
@@ -29,7 +24,7 @@ export const usePostToDo = async (
       }
     );
     if (sendNewTodo.ok) {
-      alert("Todo agregado");
+      /* alert("Todo agregado"); */
       setNewToDo("");
       setAddedToDo(!addedToDo);
     }

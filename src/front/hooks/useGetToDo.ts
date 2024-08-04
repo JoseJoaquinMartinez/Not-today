@@ -1,13 +1,11 @@
-import { jwtDecode } from "jwt-decode";
-
 import type { ToDoType } from "../components/types";
+import { useUserIdFromToken } from "./indexs.ts";
 
 export const useGetToDo = async (
   setTodos: React.Dispatch<React.SetStateAction<ToDoType[]>>
 ) => {
-  const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode<any>(token!);
-  const userId = decodedToken.userId;
+  const token = sessionStorage.getItem("token")!;
+  const userId = useUserIdFromToken();
   {
     try {
       const response = await fetch(

@@ -4,7 +4,7 @@ import { useGetToDo } from "../hooks/useGetToDo.ts";
 
 import type { ToDoInputProps, ToDoType } from "./types.d.ts";
 
-const ToDoList = ({ addedToDo }: ToDoInputProps) => {
+const ToDoList = ({ addedToDo, setAddedToDo }: ToDoInputProps) => {
   const [todos, setTodos] = useState<ToDoType[]>([]);
 
   useEffect(() => {
@@ -22,6 +22,8 @@ const ToDoList = ({ addedToDo }: ToDoInputProps) => {
           userId={userId}
           createdAt={createdAt}
           notToDo={notToDo}
+          addedToDo={addedToDo}
+          setAddedToDo={setAddedToDo}
         />
       ))}
     </div>

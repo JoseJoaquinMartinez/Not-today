@@ -16,15 +16,15 @@ const ToDoInput = ({ setAddedToDo, addedToDo }: ToDoInputProps) => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    usePostToDo(newToDo, setNewToDo, setAddedToDo, addedToDo);
+    await usePostToDo(newToDo, setNewToDo, setAddedToDo, addedToDo);
   };
 
   return (
     <form className="mt-10" onSubmit={handleSubmit}>
       <input
         type="text"
-        className="bg-[#fbe9c3] text-[#4A249D] placeholder-[#4A249D]/70 placeholder:text-sm m-3"
-        placeholder="¿Qué no hacemos hoy?"
+        className="bg-[#fbe9c3] text-[#4A249D] placeholder-[#4A249D]/70 placeholder:text-sm m-3 h-10 w-auto rounded-lg p-2 text-xl"
+        placeholder="What do we not do today?"
         value={newToDo}
         onChange={handleChange}
       />

@@ -85,6 +85,47 @@ app.get("/todos/:id", authenticateToken, async (request, response) => {
   }
 });
 
+//UPDATE toDo
+app.put("/updateToDo/:id", authenticateToken, async (request, response) => {
+  const paramsId = parseInt(request.params.id);
+  const { id, completed } = request.body;
+
+  if (paramsId) {
+    const userExsits = await prisma.userData.findFirst({
+      where: {
+        userId: paramsId,
+      },
+    });
+
+    if (userExsits) {
+      const toDo = await prisma.toDo.findFirst({
+        where: {
+          id: id,
+        },
+      });
+
+      if (toDo) {
+        await prisma.toDo.update({
+          where: {
+            id: id,
+          },
+          data: {
+            completed: completed,
+          },
+        });
+
+        return response.status(200).json({ message: "ToDo updated" });
+      } else {
+        return response.status(404).json({ message: "ToDo not found" });
+      }
+    } else {
+      return response.status(404).json({ message: "User not found" });
+    }
+  } else {
+    return response.status(400).json({ message: "Invalid ID" });
+  }
+});
+
 //DELETE toDo
 
 app.delete("/ToDo/:id", authenticateToken, async (request, response) => {
