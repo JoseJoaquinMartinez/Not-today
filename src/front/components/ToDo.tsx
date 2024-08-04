@@ -18,8 +18,10 @@ const ToDo = ({
   };
 
   const handleCompleted = async () => {
-    setToDoCompleted(!toDocompleted);
-    await useCompleted(id, toDocompleted, addedToDo, setAddedToDo);
+    const newCompleted = !toDocompleted;
+    setToDoCompleted(newCompleted);
+
+    await useCompleted(id, newCompleted, addedToDo, setAddedToDo);
   };
 
   return (
@@ -30,7 +32,9 @@ const ToDo = ({
       <button onClick={() => handleCompleted()}>
         {completed ? "✅" : "❌"}
       </button>
-      <h1 className="text-xl m-3">{title}</h1>
+      <h1 className={`text-xl m-3 ${toDocompleted ? "line-through" : ""}`}>
+        {title}
+      </h1>
       <Trash className="m-2 hover:cursor-pointer" onClick={handleDelete} />
     </div>
   );

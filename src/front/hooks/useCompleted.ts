@@ -2,7 +2,7 @@ import { useUserIdFromToken } from "./indexs.ts";
 
 export const useCompleted = async (
   id: number,
-  toDocompleted: boolean,
+  newCompleted: boolean,
   addedToDo: boolean,
   setAddedToDo: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
@@ -18,7 +18,7 @@ export const useCompleted = async (
         },
         body: JSON.stringify({
           id,
-          completed: toDocompleted,
+          completed: newCompleted,
         }),
       }
     );
