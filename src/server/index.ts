@@ -22,7 +22,7 @@ app.post("/newToDo/:id", authenticateToken, async (request, response) => {
   if (paramsId) {
     const userExsits = await prisma.userData.findFirst({
       where: {
-        id: paramsId,
+        userId: paramsId,
       },
     });
     if (userExsits) {
@@ -85,18 +85,57 @@ app.get("/todos/:id", authenticateToken, async (request, response) => {
   }
 });
 
+//UPDATE toDo
+app.put("/updateToDo/:id", authenticateToken, async (request, response) => {
+  const paramsId = parseInt(request.params.id);
+  const { id, completed } = request.body;
+
+  if (paramsId) {
+    const userExsits = await prisma.userData.findFirst({
+      where: {
+        userId: paramsId,
+      },
+    });
+
+    if (userExsits) {
+      const toDo = await prisma.toDo.findFirst({
+        where: {
+          id: id,
+        },
+      });
+
+      if (toDo) {
+        await prisma.toDo.update({
+          where: {
+            id: id,
+          },
+          data: {
+            completed: completed,
+          },
+        });
+
+        return response.status(200).json({ message: "ToDo updated" });
+      } else {
+        return response.status(404).json({ message: "ToDo not found" });
+      }
+    } else {
+      return response.status(404).json({ message: "User not found" });
+    }
+  } else {
+    return response.status(400).json({ message: "Invalid ID" });
+  }
+});
 
 //DELETE toDo
 
 app.delete("/ToDo/:id", authenticateToken, async (request, response) => {
-
   const toDoId = parseInt(request.params.id);
 
   try {
     await prisma.$transaction(async (prisma) => {
       const toDo = await prisma.toDo.findFirst({
         where: {
-          id: toDoId
+          id: toDoId,
         },
       });
 
@@ -106,14 +145,14 @@ app.delete("/ToDo/:id", authenticateToken, async (request, response) => {
 
       await prisma.toDo.delete({
         where: {
-          id: toDoId
+          id: toDoId,
         },
       });
     });
 
-    response.status(200).json({ message: "Todo and not toDo erased"});
+    response.status(200).json({ message: "Todo and not toDo erased" });
   } catch (error) {
-    response.status(500).json({error:"Error deleting todo"})
+    response.status(500).json({ error: "Error deleting todo" });
   }
 });
 

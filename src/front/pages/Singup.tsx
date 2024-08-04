@@ -1,40 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSingup } from "../hooks/useSingup.ts";
 import "../styles/pages/Singup.css";
 
 const Singup = () => {
-  const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
+  const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) {
+    const { email, password, confirmPassword } = form;
+    if (password !== confirmPassword) {
       alert("Passwords do not match");
       return;
     }
-    const { email, password } = form;
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-    if (response.ok) {
-      const { token } = await response.json();
-      sessionStorage.setItem("token", token);
-      navigate(`/`);
-    }
+    await useSingup(email, password, navigate);
   };
 
   return (
@@ -84,7 +71,7 @@ const Singup = () => {
             REGISTER
           </button>
           <p className="text- text-center m-4 ">
-            Already have an account? <a href="/">Sign in</a>
+            Already have an account? <a href="/login">Sign in</a>
           </p>
         </form>
       </article>
