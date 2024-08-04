@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { jwtDecode } from "jwt-decode";
 
-import type { decodedToken } from "./types.d.ts";
+import { usePostToDo } from "../hooks/usePostToDo.ts";
 
-const ToDoInput = () => {
-  const [newToDo, setNewToDo] = useState("");
+import type { ToDoInputProps } from "./types.d.ts";
+
+const ToDoInput = ({ setAddedToDo, addedToDo }: ToDoInputProps) => {
+  const [newToDo, setNewToDo]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState("");
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewToDo(event.target.value);
@@ -12,33 +16,7 @@ const ToDoInput = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (newToDo === "") return;
-    try {
-      const decodedToken: decodedToken = jwtDecode(
-        sessionStorage.getItem("token")!
-      );
-      const userId = decodedToken.userId;
-
-      const sendNewTodo = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/newToDo/${userId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + sessionStorage.getItem("token"),
-          },
-          body: JSON.stringify({
-            title: newToDo,
-          }),
-        }
-      );
-      if (sendNewTodo.ok) {
-        alert("Todo agregado");
-        setNewToDo("");
-      }
-    } catch (error) {
-      alert(`Error al agregar el todo ${error}}`);
-    }
+    usePostToDo(newToDo, setNewToDo, setAddedToDo, addedToDo);
   };
 
   return (

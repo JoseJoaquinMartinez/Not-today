@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 const Home = () => {
+  const navigate = useNavigate();
   return (
     <div className="flex h-screen relative">
       <img
@@ -12,7 +15,10 @@ const Home = () => {
         <h2 className="text-3xl text-white mb-8">
           Do you really have to do it today?
         </h2>
-        <button className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-3 px-6 rounded-lg">
+        <button
+          className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-3 px-6 rounded-lg"
+          onClick={() => navigate("/signup")}
+        >
           Sign in
         </button>
       </div>

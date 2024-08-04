@@ -1,23 +1,28 @@
 import ToDo from "./ToDo";
 import { useEffect, useState } from "react";
-import type { ToDoProps } from "./types.d.ts";
+import { useGetToDo } from "../hooks/useGetToDo.ts";
 
-const ToDoList = () => {
-  const [todos, setTodos] = useState([]);
+import type { ToDoInputProps, ToDoType } from "./types.d.ts";
+
+const ToDoList = ({ addedToDo }: ToDoInputProps) => {
+  const [todos, setTodos] = useState<ToDoType[]>([]);
 
   useEffect(() => {
-    const fetchTodos = async () => {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/todo`);
-      const todos = await response.json();
-      setTodos(todos);
-    };
-    fetchTodos();
-  }, [todos]);
+    useGetToDo(setTodos);
+  }, [addedToDo]);
 
   return (
     <div>
-      {todos.map(({ title, completed, id }) => (
-        <ToDo key={id} title={title} completed={completed} />
+      {todos.map(({ title, completed, id, userId, createdAt, notToDo }) => (
+        <ToDo
+          key={id}
+          id={id}
+          title={title}
+          completed={completed}
+          userId={userId}
+          createdAt={createdAt}
+          notToDo={notToDo}
+        />
       ))}
     </div>
   );

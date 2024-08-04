@@ -84,7 +84,7 @@ const Singup = () => {
             REGISTER
           </button>
           <p className="text- text-center m-4 ">
-            Already have an account? <a href="/">Sign in</a>
+            Already have an account? <a href="/login">Sign in</a>
           </p>
         </form>
       </article>
