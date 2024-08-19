@@ -17,13 +17,13 @@ const NotToDo = ({
 
   const groq = createOpenAI({
     baseURL: 'https://api.groq.com/openai/v1',
-    apiKey: process.env.GROQ_API_KEY,
+    apiKey: import.meta.env.VITE_GROQ_KEY,
   });
 
   useEffect(() => {
     const generateNotToDo = async () => {
       try {
-        const prompt = `te gusta procastinar, quiero que me generes una excusa divertida y original por la que no deba hacer la siguiente tarea "${title}". Contesta en el mismo idioma que este la tarea`;
+        const prompt = `te gusta procastinar, quiero que transformes la siguiente tarea ${title} en una excusa divertida y original. La respuesta debe ser solo la excusa sin ninguna introducción ni explicación adicional y maximo 120 caracteres.  Contesta en el mismo idioma que este la tarea`;
         const { text } = await generateText({
           model: groq('llama3-8b-8192'),
           prompt: prompt,
@@ -53,13 +53,13 @@ const NotToDo = ({
       key={id}
       className="flex items-center m-10 bg-[#fce4ec] rounded-lg text-[#D81B60]"
     >
-      <button onClick={() => handleCompleted()}>
-        {notToDoCompleted ? "✅" : "❌"}
-      </button>
+            <img
+          className="size-24 rounded-full self-center z-10"
+          src="../../../public/ROBOT.jpg"
+        ></img>
       <h1 className={`text-xl m-3 ${notToDoCompleted ? "line-through" : ""}`}>
         {notToDoTitle || "Loading..."}
       </h1>
-      <Trash className="m-2 hover:cursor-pointer" onClick={handleDelete} />
     </div>
   );
 };
