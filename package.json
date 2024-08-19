@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^0.0.44",
     "@prisma/client": "^5.17.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
