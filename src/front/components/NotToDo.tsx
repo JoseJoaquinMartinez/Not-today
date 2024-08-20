@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 
+import Swal from "sweetalert2";
+
 import type { ToDoType, ToDoInputProps } from "./types.d.ts";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
@@ -15,14 +17,34 @@ const NotToDo = ({ id, title, completed }: ToDoType & ToDoInputProps) => {
   useEffect(() => {
     const generateNotToDo = async () => {
       try {
-        const prompt = `te gusta procastinar, quiero que transformes la siguiente tarea ${title} en una excusa divertida y original. La respuesta debe ser solo la excusa sin ninguna introducción ni explicación adicional y maximo 120 caracteres.  Contesta en el mismo idioma que este la tarea`;
+        const prompt = `
+      Dado el siguiente texto: "${title}", genera una excusa divertida y original 
+      para procrastinar esta tarea. La respuesta debe ser únicamente la excusa, sin ninguna introducción, 
+      explicación, o detalles adicionales. La excusa debe estar en el mismo idioma que la tarea y tener un 
+      máximo de 120 caracteres.`;
+
         const { text } = await generateText({
           model: groq("llama3-8b-8192"),
           prompt: prompt,
         });
-        setNotToDoTitle(text);
+        if (text) {
+          setNotToDoTitle(text);
+        } else {
+          setNotToDoTitle("I'm too lazy to do this right now.");
+        }
       } catch (error) {
-        console.error("Error generating NotToDo:", error);
+        if (error instanceof Error) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: error.message,
+            background: "#f9e2af",
+            color: "#855eda",
+            customClass: {
+              popup: "my-pixel-alert",
+            },
+          });
+        }
       }
     };
 
