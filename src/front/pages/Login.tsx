@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLogin } from "../hooks/useLogin.ts";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 import "../styles/pages/Login.css";
 
@@ -19,7 +20,17 @@ const Login = () => {
     e.preventDefault();
     const { email, password } = form;
     if (email === "" || password === "") {
-      alert("Please fill all the fields");
+      Swal.fire({
+        icon: "error",
+        title: "Please fill all the fields",
+        text: "Please fill all the fields",
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: {
+          popup: "my-pixel-alert",
+        },
+      });
+
       return;
     }
     await useLogin(email, password, navigate);
