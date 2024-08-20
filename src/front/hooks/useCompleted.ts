@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import { useUserIdFromToken } from "./indexs.ts";
 
 export const useCompleted = async (
@@ -24,12 +25,27 @@ export const useCompleted = async (
     );
 
     if (response.ok) {
-      /* alert("ToDo updated"); */
       setAddedToDo(!addedToDo);
     } else {
-      console.error("Error al actualizar la tarea:", response.statusText);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: response.statusText,
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: { popup: "my-pixel-alert" },
+      });
     }
   } catch (error) {
-    console.error("Error de red al actualizar la tarea:", error);
+    if (error instanceof Error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: { popup: "my-pixel-alert" },
+      });
+    }
   }
 };

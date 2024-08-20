@@ -164,6 +164,16 @@ app.post("/user", async (request, response) => {
   if (!email || !password) {
     return response.status(400).json({ message: "All fields are required" });
   }
+  const checkEmailExists = await prisma.user.findFirst({
+    where: {
+      email: email,
+    },
+  });
+  const emailExists = checkEmailExists ? true : false;
+
+  if (emailExists) {
+    return response.status(400).json({ message: "Email already exists" });
+  }
 
   try {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -203,16 +213,21 @@ app.post("/login", async (request, response) => {
       },
     });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (!user) {
+      return response.status(404).json({ message: "User not found" }); // Cambia el código de estado a 404 si el usuario no existe
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (isPasswordValid) {
       const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
         expiresIn: "24h",
       });
-      response.status(200).json({ message: "Login successful", token });
+      return response.status(200).json({ message: "Login successful", token });
     } else {
-      response.status(401).json({ message: "Invalid email or password" });
+      return response.status(401).json({ message: "Invalid password" });
     }
   } catch (error) {
-    response.status(500).json({ error: `"Error logging in user: ${error}` });
+    response.status(500).json({ error: `Error logging in user: ${error}` });
   }
 });
 

@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 import { useUserIdFromToken } from "./indexs.ts";
 
 export const usePostToDo = async (
@@ -24,11 +25,21 @@ export const usePostToDo = async (
       }
     );
     if (sendNewTodo.ok) {
-      /* alert("Todo agregado"); */
       setNewToDo("");
       setAddedToDo(!addedToDo);
     }
   } catch (error) {
-    alert(`Error al agregar el todo ${error}}`);
+    if (error instanceof Error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: {
+          popup: "my-pixel-alert",
+        },
+      });
+    }
   }
 };

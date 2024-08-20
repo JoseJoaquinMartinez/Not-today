@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+
 import { useSingup } from "../hooks/useSingup.ts";
+
 import "../styles/pages/Singup.css";
 
 const Singup = () => {
@@ -18,7 +21,17 @@ const Singup = () => {
     e.preventDefault();
     const { email, password, confirmPassword } = form;
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      Swal.fire({
+        icon: "error",
+        title: "Passwords do not match",
+        text: "Passwords do not match",
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: {
+          popup: "my-pixel-alert",
+        },
+      });
+
       return;
     }
     await useSingup(email, password, navigate);
