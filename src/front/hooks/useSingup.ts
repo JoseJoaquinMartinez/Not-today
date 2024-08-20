@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export const useSingup = async (
   email: string,
   password: string,
@@ -21,16 +23,52 @@ export const useSingup = async (
     } else {
       const errorData = await response.json();
       if (response.status === 400) {
-        alert("Email already exists. Please try again.");
+        Swal.fire({
+          icon: "error",
+          title: "Email already exists",
+          text: "Please try again.",
+          background: "#f9e2af",
+          color: "#855eda",
+          customClass: {
+            popup: "my-pixel-alert",
+          },
+        });
       } else {
-        alert(`Error: ${errorData.message}`);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorData.message,
+          background: "#f9e2af",
+          color: "#855eda",
+          customClass: {
+            popup: "my-pixel-alert",
+          },
+        });
       }
     }
   } catch (error) {
     if (error instanceof Error) {
-      alert(`Error singing up: ${error.message}`);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: {
+          popup: "my-pixel-alert",
+        },
+      });
     } else {
-      alert("An unexpected error occurred.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An unexpected error occurred.",
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: {
+          popup: "my-pixel-alert",
+        },
+      });
     }
   }
 };

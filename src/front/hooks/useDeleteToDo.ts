@@ -1,3 +1,4 @@
+import Swal from "sweetalert2";
 export const useDeleteToDo = async (
   id: number,
   addedToDo: boolean,
@@ -16,12 +17,27 @@ export const useDeleteToDo = async (
     );
 
     if (response.ok) {
-      /* alert("ToDo deleted"); */
       setAddedToDo(!addedToDo);
     } else {
-      console.error("Error al eliminar la tarea:", response.statusText);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: response.statusText,
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: { popup: "my-pixel-alert" },
+      });
     }
   } catch (error) {
-    console.error("Error de red al eliminar la tarea:", error);
+    if (error instanceof Error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: { popup: "my-pixel-alert" },
+      });
+    }
   }
 };

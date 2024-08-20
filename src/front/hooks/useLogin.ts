@@ -1,3 +1,5 @@
+import Swal from "sweetalert2";
+
 export const useLogin = async (
   email: string,
   password: string,
@@ -22,18 +24,63 @@ export const useLogin = async (
     } else {
       const errorData = await response.json();
       if (response.status === 404) {
-        alert("User not found. Please check your email.");
+        Swal.fire({
+          icon: "error",
+          title: "User not found",
+          text: "Please check your email.",
+          background: "#f9e2af",
+          color: "#855eda",
+          customClass: {
+            popup: "my-pixel-alert",
+          },
+        });
       } else if (response.status === 401) {
-        alert("Invalid password. Please try again.");
+        Swal.fire({
+          icon: "error",
+          title: "Invalid password",
+          text: "Please try again.",
+          background: "#f9e2af",
+          color: "#855eda",
+          customClass: {
+            popup: "my-pixel-alert",
+          },
+        });
       } else {
-        alert(`Error: ${errorData.message}`);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: errorData.message,
+          background: "#f9e2af",
+          color: "#855eda",
+          customClass: {
+            popup: "my-pixel-alert",
+          },
+        });
       }
     }
   } catch (error) {
     if (error instanceof Error) {
-      alert(`Error logging in: ${error.message}`);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message,
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: {
+          popup: "my-pixel-alert",
+        },
+      });
     } else {
-      alert("An unexpected error occurred.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "An unexpected error occurred.",
+        background: "#f9e2af",
+        color: "#855eda",
+        customClass: {
+          popup: "my-pixel-alert",
+        },
+      });
     }
   }
 };

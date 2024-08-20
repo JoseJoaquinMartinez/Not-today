@@ -9,6 +9,12 @@
   font-weight: normal;
   font-style: normal;
 }
+.my-pixel-alert {
+  border: 2px solid #f9e2af;
+  box-shadow: 0 0 0 8px #855eda;
+  font-family: "VideophreakRegular", sans-serif;
+}
+
 :root {
   font-family: "VideophreakRegular", sans-serif;
   color-scheme: light dark;
