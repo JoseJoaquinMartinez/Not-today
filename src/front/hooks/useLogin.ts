@@ -14,12 +14,26 @@ export const useLogin = async (
         password,
       }),
     });
+
     if (response.ok) {
       const { token } = await response.json();
       sessionStorage.setItem("token", token);
       navigate(`/not-today`);
+    } else {
+      const errorData = await response.json();
+      if (response.status === 404) {
+        alert("User not found. Please check your email.");
+      } else if (response.status === 401) {
+        alert("Invalid password. Please try again.");
+      } else {
+        alert(`Error: ${errorData.message}`);
+      }
     }
   } catch (error) {
-    console.log(error);
+    if (error instanceof Error) {
+      alert(`Error logging in: ${error.message}`);
+    } else {
+      alert("An unexpected error occurred.");
+    }
   }
 };
