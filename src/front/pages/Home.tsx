@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import backgroundImg from "../../../public/signup-backgorund.jpg";
+import hamacabotImg from "../../../public/hamacabot.jpg";
 
 const Home = () => {
   const navigate = useNavigate();
   return (
     <div className="flex flex-col md:flex-row items-center justify-center h-screen relative">
       <img
-        src="../../../../public/signup-backgorund.jpg"
+        src={backgroundImg}
         alt="Background"
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -35,7 +37,7 @@ const Home = () => {
 
       <div className="md:w-1/2 flex justify-center items-center z-10">
         <img
-          src="../../../../public/hamacabot.jpg"
+          src={hamacabotImg}
           alt="Lazy bot"
           className="max-w-xs shadow-xl size-md:max-w-none"
           style={{ boxShadow: "0 0 20px 10px rgba(0, 0, 0, 0.5)" }}
