@@ -1,0 +1,8 @@
+.to-do-container {
+  background-image: url("../../../../public/main-background.jpg");
+  background-position: center;
+  background-attachment: fixed;
+  background-size: cover;
+  width: 100vw;
+  min-height: 100vh;
+}
