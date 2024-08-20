@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useLogin } from "../hooks/useLogin.ts";
 import { useNavigate } from "react-router-dom";
+
 import "../styles/pages/Login.css";
 
 const Login = () => {
@@ -12,6 +14,7 @@ const Login = () => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { email, password } = form;
@@ -19,20 +22,7 @@ const Login = () => {
       alert("Please fill all the fields");
       return;
     }
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    });
-    if (response.ok) {
-      alert("Login successful");
-      navigate(`/`);
-    }
+    await useLogin(email, password, navigate);
   };
 
   return (
