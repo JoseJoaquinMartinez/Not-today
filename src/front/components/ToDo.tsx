@@ -35,7 +35,12 @@ const ToDo = ({
       <h1 className={`text-xl m-3 ${toDocompleted ? "line-through" : ""}`}>
         {title}
       </h1>
-      <Trash className="m-2 hover:cursor-pointer" onClick={handleDelete} />
+      <article>
+        <Trash
+          className="m-2 hover:cursor-pointer size-[1.5rem]"
+          onClick={handleDelete}
+        />
+      </article>
     </div>
   );
 };

@@ -17,11 +17,11 @@ const MainPage = () => {
   return (
     <section className="to-do-container flex flex-col items-center ">
       <ToDoInput setAddedToDo={setAddedToDo} addedToDo={addedToDo} />
-      <article className="flex flex-col md:flex-row justify-between items-center mt-6">
+      <article className="flex flex-col md:flex-row justify-center items-center mt-6 w-full">
         <ToDoList addedToDo={addedToDo} setAddedToDo={setAddedToDo} />
       </article>
       <button
-        className="bg-[#855EDA] hover:bg-[#4A249D] text-[#fbe9c3] hover:text-[#F9E2AF] transition-all rounded-lg p-4 m-4"
+        className="bg-[#fbe9c3] hover:bg-[#F9E2AF] text-[#855EDA] hover:text-[#4A249D] transition-all rounded-lg p-4 m-4"
         onClick={handleLogout}
       >
         Log out
