@@ -183,11 +183,13 @@ app.post("/user", async (request, response) => {
         password: hashedPassword,
       },
     });
-    const newUserData = await prisma.userData.create({
-      data: {
-        userId: newUser.id,
-      },
-    });
+    if (newUser) {
+      await prisma.userData.create({
+        data: {
+          userId: newUser.id,
+        },
+      });
+    }
     const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET!, {
       expiresIn: "24h",
     });
