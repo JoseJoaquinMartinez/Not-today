@@ -15,12 +15,20 @@ const Home = () => {
         <h2 className="text-3xl text-white mb-8">
           Do you really have to do it today?
         </h2>
-        <button
-          className="bg-[#855EDA] hover:bg-purple-900 text-white font-bold py-3 px-6 rounded-lg"
-          onClick={() => navigate("/signup")}
-        >
-          Sign up
-        </button>
+        <article className="flex ">
+          <button
+            className="bg-[#855EDA] hover:bg-purple-900 text-white font-bold py-3 px-6 rounded-lg mr-5"
+            onClick={() => navigate("/signup")}
+          >
+            Sign up
+          </button>
+          <button
+            className="bg-[#855EDA] hover:bg-purple-900 text-white font-bold py-3 px-6 rounded-lg"
+            onClick={() => navigate("/login")}
+          >
+            Log in
+          </button>
+        </article>
       </div>
 
       <div className="w-1/2 flex justify-center items-center z-10">
