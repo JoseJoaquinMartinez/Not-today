@@ -14,6 +14,7 @@ export const useGetToDo = async (
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,
             Authorization: `Bearer ${token}`,
           },
         }

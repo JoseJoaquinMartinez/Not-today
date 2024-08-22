@@ -1,5 +1,5 @@
 import express from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -9,8 +9,18 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-const corsOptions = {
-  origin: ["https://not-today.vercel.app", "http://localhost:3000"],
+const corsOptions: CorsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      "https://not-today.vercel.app",
+      "http://localhost:3000",
+    ];
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,

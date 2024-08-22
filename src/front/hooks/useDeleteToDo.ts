@@ -11,6 +11,7 @@ export const useDeleteToDo = async (
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
       }

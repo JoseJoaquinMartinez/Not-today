@@ -18,6 +18,7 @@ export const usePostToDo = async (
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + sessionStorage.getItem("token"),
+          apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,
         },
         body: JSON.stringify({
           title: newToDo,
