@@ -12,8 +12,8 @@ const app = express();
 const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
     const allowedOrigins = [
-      "https://not-today.vercel.app",
-      "http://localhost:3000",
+      "https://vercel.com/josejoaquinmartinezs-projects/not-today-backend/FDrKZ3mbnkTyTmswBErq3QGDzpFi",
+      "https://not-today-backend.vercel.app/",
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
