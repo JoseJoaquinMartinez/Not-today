@@ -14,6 +14,7 @@ const corsOptions: CorsOptions = {
     const allowedOrigins = [
       "https://vercel.com/josejoaquinmartinezs-projects/not-today-backend/FDrKZ3mbnkTyTmswBErq3QGDzpFi",
       "https://not-today-backend.vercel.app/",
+      "https://not-today.vercel.app",
     ];
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
