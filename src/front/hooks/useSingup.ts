@@ -8,9 +8,9 @@ export const useSingup = async (
   try {
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
-        apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,
         Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_KEY}`,
       },
       body: JSON.stringify({

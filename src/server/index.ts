@@ -9,14 +9,16 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["https://not-today.vercel.app"];
+
 const corsOptions: CorsOptions = {
-  origin: (origin, callback) => {
-    const allowedOrigins = [
-      "https://vercel.com/josejoaquinmartinezs-projects/not-today-backend/FDrKZ3mbnkTyTmswBErq3QGDzpFi",
-      "https://not-today-backend.vercel.app",
-      "https://not-today.vercel.app",
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
+  origin: function (
+    origin: string | undefined,
+    callback: (error: Error | null, allow?: boolean) => void
+  ) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
       callback(new Error("Not allowed by CORS"));
@@ -25,161 +27,186 @@ const corsOptions: CorsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
+  optionsSuccessStatus: 204,
 };
 
 app.use(cors(corsOptions));
-app.use(express.json());
 
+app.use(express.json());
 app.options("*", cors(corsOptions));
-export { app };
 const saltRounds = 10;
 
+app.use(
+  (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.log(
+      `Received ${req.method} request to ${req.url} from origin: ${req.headers.origin}`
+    );
+    next();
+  }
+);
+
 //CREATE new todo
+app.post(
+  "/newToDo/:id",
+  authenticateToken,
+  cors(corsOptions),
+  async (request, response) => {
+    const { title } = request.body;
+    const paramsId = parseInt(request.params.id);
 
-app.post("/newToDo/:id", authenticateToken, async (request, response) => {
-  const { title } = request.body;
-  const paramsId = parseInt(request.params.id);
-
-  if (paramsId) {
-    const userExsits = await prisma.userData.findFirst({
-      where: {
-        userId: paramsId,
-      },
-    });
-    if (userExsits) {
-      const newToDo = await prisma.toDo.create({
-        data: {
-          title: title,
+    if (paramsId) {
+      const userExsits = await prisma.userData.findFirst({
+        where: {
           userId: paramsId,
         },
       });
-      if (!newToDo) {
-        return response
-          .status(500)
-          .json({ message: "Error creating new ToDo" });
-      }
-      response.status(201).json(newToDo);
-    } else {
-      response.status(404).json({ message: "User not found" });
-    }
-  } else {
-    response.status(400).json({ message: "Invalid ID" });
-  }
-});
-
-//GET toDos
-
-app.get("/todos/:id", authenticateToken, async (request, response) => {
-  const paramsId = parseInt(request.params.id);
-
-  if (paramsId) {
-    try {
-      const user = await prisma.user.findFirst({
-        where: {
-          id: paramsId,
-        },
-      });
-
-      if (user) {
-        const userData = await prisma.userData.findMany({
-          where: {
+      if (userExsits) {
+        const newToDo = await prisma.toDo.create({
+          data: {
+            title: title,
             userId: paramsId,
           },
-          include: {
-            todo: {
-              include: {
-                notToDo: true,
-              },
-            },
+        });
+        if (!newToDo) {
+          return response
+            .status(500)
+            .json({ message: "Error creating new ToDo" });
+        }
+        response.status(201).json(newToDo);
+      } else {
+        response.status(404).json({ message: "User not found" });
+      }
+    } else {
+      response.status(400).json({ message: "Invalid ID" });
+    }
+  }
+);
+
+//GET toDos
+app.get(
+  "/todos/:id",
+  authenticateToken,
+  cors(corsOptions),
+  async (request, response) => {
+    const paramsId = parseInt(request.params.id);
+
+    if (paramsId) {
+      try {
+        const user = await prisma.user.findFirst({
+          where: {
+            id: paramsId,
           },
         });
 
-        return response.status(200).json(userData);
-      } else {
-        return response.status(404).json({ message: "User not found" });
+        if (user) {
+          const userData = await prisma.userData.findMany({
+            where: {
+              userId: paramsId,
+            },
+            include: {
+              todo: {
+                include: {
+                  notToDo: true,
+                },
+              },
+            },
+          });
+
+          return response.status(200).json(userData);
+        } else {
+          return response.status(404).json({ message: "User not found" });
+        }
+      } catch (error) {
+        return response.status(500).json({ message: "Error loading todos" });
       }
-    } catch (error) {
-      return response.status(500).json({ message: "Error loading todos" });
+    } else {
+      return response.status(400).json({ message: "Invalid ID" });
     }
-  } else {
-    return response.status(400).json({ message: "Invalid ID" });
   }
-});
+);
 
 //UPDATE toDo
-app.put("/updateToDo/:id", authenticateToken, async (request, response) => {
-  const paramsId = parseInt(request.params.id);
-  const { id, completed } = request.body;
+app.put(
+  "/updateToDo/:id",
+  authenticateToken,
+  cors(corsOptions),
+  async (request, response) => {
+    const paramsId = parseInt(request.params.id);
+    const { id, completed } = request.body;
 
-  if (paramsId) {
-    const userExsits = await prisma.userData.findFirst({
-      where: {
-        userId: paramsId,
-      },
-    });
-
-    if (userExsits) {
-      const toDo = await prisma.toDo.findFirst({
+    if (paramsId) {
+      const userExsits = await prisma.userData.findFirst({
         where: {
-          id: id,
+          userId: paramsId,
         },
       });
 
-      if (toDo) {
-        await prisma.toDo.update({
+      if (userExsits) {
+        const toDo = await prisma.toDo.findFirst({
           where: {
             id: id,
           },
-          data: {
-            completed: completed,
+        });
+
+        if (toDo) {
+          await prisma.toDo.update({
+            where: {
+              id: id,
+            },
+            data: {
+              completed: completed,
+            },
+          });
+
+          return response.status(200).json({ message: "ToDo updated" });
+        } else {
+          return response.status(404).json({ message: "ToDo not found" });
+        }
+      } else {
+        return response.status(404).json({ message: "User not found" });
+      }
+    } else {
+      return response.status(400).json({ message: "Invalid ID" });
+    }
+  }
+);
+
+//DELETE toDo
+app.delete(
+  "/ToDo/:id",
+  authenticateToken,
+  cors(corsOptions),
+  async (request, response) => {
+    const toDoId = parseInt(request.params.id);
+
+    try {
+      await prisma.$transaction(async (prisma) => {
+        const toDo = await prisma.toDo.findFirst({
+          where: {
+            id: toDoId,
           },
         });
 
-        return response.status(200).json({ message: "ToDo updated" });
-      } else {
-        return response.status(404).json({ message: "ToDo not found" });
-      }
-    } else {
-      return response.status(404).json({ message: "User not found" });
+        if (!toDo) {
+          return response.status(404).json({ error: "ToDo not Found" });
+        }
+
+        await prisma.toDo.delete({
+          where: {
+            id: toDoId,
+          },
+        });
+      });
+
+      response.status(200).json({ message: "Todo and not toDo erased" });
+    } catch (error) {
+      response.status(500).json({ error: "Error deleting todo" });
     }
-  } else {
-    return response.status(400).json({ message: "Invalid ID" });
   }
-});
-
-//DELETE toDo
-
-app.delete("/ToDo/:id", authenticateToken, async (request, response) => {
-  const toDoId = parseInt(request.params.id);
-
-  try {
-    await prisma.$transaction(async (prisma) => {
-      const toDo = await prisma.toDo.findFirst({
-        where: {
-          id: toDoId,
-        },
-      });
-
-      if (!toDo) {
-        return response.status(404).json({ error: "ToDo not Found" });
-      }
-
-      await prisma.toDo.delete({
-        where: {
-          id: toDoId,
-        },
-      });
-    });
-
-    response.status(200).json({ message: "Todo and not toDo erased" });
-  } catch (error) {
-    response.status(500).json({ error: "Error deleting todo" });
-  }
-});
+);
 
 //SINGUP
-
-app.post("/user", async (request, response) => {
+app.post("/user", cors(corsOptions), async (request, response) => {
   const { email, password } = request.body;
 
   if (!email || !password) {
@@ -221,8 +248,7 @@ app.post("/user", async (request, response) => {
 });
 
 //LOGIN
-
-app.post("/login", async (request, response) => {
+app.post("/login", cors(corsOptions), async (request, response) => {
   const { email, password } = request.body;
 
   if (!email || !password) {
@@ -237,7 +263,7 @@ app.post("/login", async (request, response) => {
     });
 
     if (!user) {
-      return response.status(404).json({ message: "User not found" }); // Cambia el código de estado a 404 si el usuario no existe
+      return response.status(404).json({ message: "User not found" });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);

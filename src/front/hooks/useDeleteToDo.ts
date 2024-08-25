@@ -9,6 +9,7 @@ export const useDeleteToDo = async (
       `${import.meta.env.VITE_BACKEND_URL}/ToDo/${id}`,
       {
         method: "DELETE",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,

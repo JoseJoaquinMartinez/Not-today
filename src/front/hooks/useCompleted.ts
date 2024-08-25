@@ -13,6 +13,7 @@ export const useCompleted = async (
       `${import.meta.env.VITE_BACKEND_URL}/updateToDo/${userId}`,
       {
         method: "PUT",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,

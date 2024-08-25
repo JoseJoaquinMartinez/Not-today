@@ -8,6 +8,7 @@ export const useLogin = async (
   try {
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/login`, {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
         apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,

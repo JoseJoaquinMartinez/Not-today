@@ -12,6 +12,7 @@ export const useGetToDo = async (
         `${import.meta.env.VITE_BACKEND_URL}/todos/${userId}`,
         {
           method: "GET",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
             apikey: `${import.meta.env.VITE_SUPABASE_KEY}`,

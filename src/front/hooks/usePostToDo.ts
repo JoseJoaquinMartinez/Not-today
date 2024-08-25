@@ -15,6 +15,7 @@ export const usePostToDo = async (
       `${import.meta.env.VITE_BACKEND_URL}/newToDo/${userId}`,
       {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           Authorization: "Bearer " + sessionStorage.getItem("token"),
