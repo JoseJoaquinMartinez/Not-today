@@ -41,6 +41,7 @@ app.use(
     console.log(
       `Received ${req.method} request to ${req.url} from origin: ${req.headers.origin}`
     );
+    res.header("Access-Control-Allow-Origin", "*");
     next();
   }
 );
