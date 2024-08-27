@@ -9,7 +9,19 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-app.use(cors);
+const corsOptions: CorsOptions = {
+  origin: [
+    "https://not-today.vercel.app",
+    "http://localhost:3000",
+    "https://not-today-backend.vercel.app",
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 
