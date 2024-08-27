@@ -1,5 +1,5 @@
 import express from "express";
-import cors, { CorsOptions } from "cors";
+import cors /* , { CorsOptions } */ from "cors";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS
+/* const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
   : ["https://not-today.vercel.app"];
 
@@ -29,28 +29,18 @@ const corsOptions: CorsOptions = {
   credentials: true,
   optionsSuccessStatus: 204,
 };
-
-app.use(cors(corsOptions));
+ */
+app.use(cors /* cors(corsOptions) */);
 
 app.use(express.json());
-app.options("*", cors(corsOptions));
+/* app.options("*", cors(corsOptions)); */
 const saltRounds = 10;
-
-app.use(
-  (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log(
-      `Received ${req.method} request to ${req.url} from origin: ${req.headers.origin}`
-    );
-    res.header("Access-Control-Allow-Origin", "*");
-    next();
-  }
-);
 
 //CREATE new todo
 app.post(
   "/newToDo/:id",
   authenticateToken,
-  cors(corsOptions),
+  /* cors(corsOptions), */
   async (request, response) => {
     const { title } = request.body;
     const paramsId = parseInt(request.params.id);
@@ -87,7 +77,7 @@ app.post(
 app.get(
   "/todos/:id",
   authenticateToken,
-  cors(corsOptions),
+  /* cors(corsOptions), */
   async (request, response) => {
     const paramsId = parseInt(request.params.id);
 
@@ -130,7 +120,7 @@ app.get(
 app.put(
   "/updateToDo/:id",
   authenticateToken,
-  cors(corsOptions),
+  /* cors(corsOptions), */
   async (request, response) => {
     const paramsId = parseInt(request.params.id);
     const { id, completed } = request.body;
@@ -176,7 +166,7 @@ app.put(
 app.delete(
   "/ToDo/:id",
   authenticateToken,
-  cors(corsOptions),
+  /* cors(corsOptions), */
   async (request, response) => {
     const toDoId = parseInt(request.params.id);
 
@@ -207,79 +197,87 @@ app.delete(
 );
 
 //SINGUP
-app.post("/user", cors(corsOptions), async (request, response) => {
-  const { email, password } = request.body;
+app.post(
+  "/user",
+  /* cors(corsOptions), */ async (request, response) => {
+    const { email, password } = request.body;
 
-  if (!email || !password) {
-    return response.status(400).json({ message: "All fields are required" });
-  }
-  const checkEmailExists = await prisma.user.findFirst({
-    where: {
-      email: email,
-    },
-  });
-  const emailExists = checkEmailExists ? true : false;
-
-  if (emailExists) {
-    return response.status(400).json({ message: "Email already exists" });
-  }
-
-  try {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    const newUser = await prisma.user.create({
-      data: {
-        email: email,
-        password: hashedPassword,
-      },
-    });
-    if (newUser) {
-      await prisma.userData.create({
-        data: {
-          userId: newUser.id,
-        },
-      });
+    if (!email || !password) {
+      return response.status(400).json({ message: "All fields are required" });
     }
-    const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET!, {
-      expiresIn: "24h",
-    });
-    response.status(201).json({ message: "User added", token });
-  } catch (error) {
-    response.status(500).json({ error: "Error creating new user" });
-  }
-});
-
-//LOGIN
-app.post("/login", cors(corsOptions), async (request, response) => {
-  const { email, password } = request.body;
-
-  if (!email || !password) {
-    return response.status(400).json({ message: "All fields are required" });
-  }
-
-  try {
-    const user = await prisma.user.findFirst({
+    const checkEmailExists = await prisma.user.findFirst({
       where: {
         email: email,
       },
     });
+    const emailExists = checkEmailExists ? true : false;
 
-    if (!user) {
-      return response.status(404).json({ message: "User not found" });
+    if (emailExists) {
+      return response.status(400).json({ message: "Email already exists" });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (isPasswordValid) {
-      const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+    try {
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const newUser = await prisma.user.create({
+        data: {
+          email: email,
+          password: hashedPassword,
+        },
+      });
+      if (newUser) {
+        await prisma.userData.create({
+          data: {
+            userId: newUser.id,
+          },
+        });
+      }
+      const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET!, {
         expiresIn: "24h",
       });
-      return response.status(200).json({ message: "Login successful", token });
-    } else {
-      return response.status(401).json({ message: "Invalid password" });
+      response.status(201).json({ message: "User added", token });
+    } catch (error) {
+      response.status(500).json({ error: "Error creating new user" });
     }
-  } catch (error) {
-    response.status(500).json({ error: `Error logging in user: ${error}` });
   }
-});
+);
+
+//LOGIN
+app.post(
+  "/login",
+  /* cors(corsOptions), */ async (request, response) => {
+    const { email, password } = request.body;
+
+    if (!email || !password) {
+      return response.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+      const user = await prisma.user.findFirst({
+        where: {
+          email: email,
+        },
+      });
+
+      if (!user) {
+        return response.status(404).json({ message: "User not found" });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (isPasswordValid) {
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
+          expiresIn: "24h",
+        });
+        return response
+          .status(200)
+          .json({ message: "Login successful", token });
+      } else {
+        return response.status(401).json({ message: "Invalid password" });
+      }
+    } catch (error) {
+      response.status(500).json({ error: `Error logging in user: ${error}` });
+    }
+  }
+);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
