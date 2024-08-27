@@ -1,5 +1,5 @@
 import express from "express";
-import cors /* , { CorsOptions } */ from "cors";
+import cors, { CorsOptions } from "cors";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
 const app = express();
 
-/* const allowedOrigins = process.env.ALLOWED_ORIGINS
+const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
   : ["https://not-today.vercel.app"];
 
@@ -29,18 +29,18 @@ const corsOptions: CorsOptions = {
   credentials: true,
   optionsSuccessStatus: 204,
 };
- */
-app.use(cors /* cors(corsOptions) */);
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
-/* app.options("*", cors(corsOptions)); */
+app.options("*", cors(corsOptions));
 const saltRounds = 10;
 
 //CREATE new todo
 app.post(
   "/newToDo/:id",
   authenticateToken,
-  /* cors(corsOptions), */
+  cors(corsOptions),
   async (request, response) => {
     const { title } = request.body;
     const paramsId = parseInt(request.params.id);
@@ -197,49 +197,46 @@ app.delete(
 );
 
 //SINGUP
-app.post(
-  "/user",
-  /* cors(corsOptions), */ async (request, response) => {
-    const { email, password } = request.body;
+app.post("/user", cors(corsOptions), async (request, response) => {
+  const { email, password } = request.body;
 
-    if (!email || !password) {
-      return response.status(400).json({ message: "All fields are required" });
-    }
-    const checkEmailExists = await prisma.user.findFirst({
-      where: {
+  if (!email || !password) {
+    return response.status(400).json({ message: "All fields are required" });
+  }
+  const checkEmailExists = await prisma.user.findFirst({
+    where: {
+      email: email,
+    },
+  });
+  const emailExists = checkEmailExists ? true : false;
+
+  if (emailExists) {
+    return response.status(400).json({ message: "Email already exists" });
+  }
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const newUser = await prisma.user.create({
+      data: {
         email: email,
+        password: hashedPassword,
       },
     });
-    const emailExists = checkEmailExists ? true : false;
-
-    if (emailExists) {
-      return response.status(400).json({ message: "Email already exists" });
-    }
-
-    try {
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-      const newUser = await prisma.user.create({
+    if (newUser) {
+      await prisma.userData.create({
         data: {
-          email: email,
-          password: hashedPassword,
+          userId: newUser.id,
         },
       });
-      if (newUser) {
-        await prisma.userData.create({
-          data: {
-            userId: newUser.id,
-          },
-        });
-      }
-      const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET!, {
-        expiresIn: "24h",
-      });
-      response.status(201).json({ message: "User added", token });
-    } catch (error) {
-      response.status(500).json({ error: "Error creating new user" });
     }
+    const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET!, {
+      expiresIn: "24h",
+    });
+    response.status(201).json({ message: "User added", token });
+  } catch (error) {
+    response.status(500).json({ error: "Error creating new user" });
   }
-);
+});
 
 //LOGIN
 app.post(
