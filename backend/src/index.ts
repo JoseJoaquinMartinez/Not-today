@@ -13,6 +13,7 @@ const corsOptions: CorsOptions = {
   origin: [
     "https://not-today.vercel.app",
     "http://localhost:3000",
+    "http://localhost:5173",
     "https://not-today-backend.vercel.app",
   ],
   methods: ["GET", "POST", "PUT", "DELETE"],
