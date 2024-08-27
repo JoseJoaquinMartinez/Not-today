@@ -2,11 +2,12 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "backend for Not Today app",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "test": "run dev",
-    "build": "tsc -b"
+    "build": "tsc",
+    "start": "node dist/index.js"
   },
   "author": "José Joaquín",
   "license": "ISC",
@@ -30,5 +31,8 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.0",
     "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
