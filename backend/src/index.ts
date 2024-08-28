@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors, { CorsOptions } from "cors";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
@@ -27,6 +27,14 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 const saltRounds = 10;
+
+app.get("/", (_req: Request, res: Response) => {
+  return res.send("Express Typescript on Vercel");
+});
+
+app.get("/ping", (_req: Request, res: Response) => {
+  return res.send("pong 🏓");
+});
 
 //CREATE new todo
 app.post(
