@@ -6,6 +6,8 @@ import type { ToDoType, ToDoInputProps } from "./types.d.ts";
 import { createOpenAI } from "@ai-sdk/openai";
 import { generateText } from "ai";
 
+import RobotImg from "../../public/ROBOT.jpg";
+
 const NotToDo = ({ id, title, completed }: ToDoType & ToDoInputProps) => {
   const [notToDoTitle, setNotToDoTitle] = useState<string>("");
 
@@ -58,7 +60,7 @@ const NotToDo = ({ id, title, completed }: ToDoType & ToDoInputProps) => {
     >
       <img
         className="size-24 rounded-full self-center z-10"
-        src="../../../public/ROBOT.jpg"
+        src={RobotImg}
       ></img>
       <h1 className={`text-xl m-3 ${completed ? "line-through" : ""}`}>
         {notToDoTitle || "Loading..."}

@@ -1,5 +1,5 @@
 .to-do-container {
-  background-image: url("../../../../public/main-background.jpg");
+  background-image: url("../../../public/main-background.jpg");
   background-position: center;
   background-attachment: fixed;
   background-size: cover;
