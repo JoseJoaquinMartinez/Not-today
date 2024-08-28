@@ -28,14 +28,6 @@ app.use(express.json());
 
 const saltRounds = 10;
 
-app.get("/", (_req: Request, res: Response) => {
-  return res.send("Express Typescript on Vercel");
-});
-
-app.get("/ping", (_req: Request, res: Response) => {
-  return res.send("pong 🏓");
-});
-
 //CREATE new todo
 app.post(
   "/newToDo/:id",
